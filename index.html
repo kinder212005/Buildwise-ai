@@ -10,8 +10,6 @@
             --panel-bg: rgba(22, 27, 34, 0.85);
             --border-color: rgba(255, 255, 255, 0.12);
             --text-color: #f0f6fc;
-            --accent-color: #7928ca;
-            --accent-hover: #9c3ded;
             --user-bubble: linear-gradient(135deg, #007cf0, #00dfd8);
             --ai-bubble: rgba(33, 38, 45, 0.9);
         }
@@ -240,7 +238,7 @@
     </div>
 
     <script>
-        const MODEL_NAME = 'gemini-2.5-flash';
+        const MODEL_NAME = 'gemini-3.8-flash';
         let chatHistory = [];
         let attachedFile = null;
         let recognition = null;
@@ -394,7 +392,7 @@
 
             } catch (err) {
                 updateMessage(loadingId, `❌ Error: ${err.message}`);
-                chatHistory.pop(); // remove failed user request from memory
+                chatHistory.pop();
                 attachedFile = currentAttachment;
             }
         }
