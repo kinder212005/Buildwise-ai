@@ -7,18 +7,18 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
-            --bg-color: #0d1117;
-            --panel-bg: #161b22;
-            --border-color: #30363d;
-            --text-color: #c9d1d9;
-            --accent-color: #238636;
-            --accent-hover: #2ea043;
-            --user-bubble: #1f6feb;
-            --ai-bubble: #21262d;
+            --panel-bg: rgba(22, 27, 34, 0.85);
+            --border-color: rgba(255, 255, 255, 0.12);
+            --text-color: #f0f6fc;
+            --accent-color: #7928ca;
+            --accent-hover: #9c3ded;
+            --user-bubble: linear-gradient(135deg, #007cf0, #00dfd8);
+            --ai-bubble: rgba(33, 38, 45, 0.9);
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            background-attachment: fixed;
             color: var(--text-color);
             margin: 0;
             padding: 0;
@@ -28,23 +28,25 @@
         }
         header {
             background-color: var(--panel-bg);
+            backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-color);
-            padding: 12px 20px;
+            padding: 14px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        h1 { font-size: 1.2rem; margin: 0; color: #ffffff; }
+        h1 { font-size: 1.2rem; margin: 0; color: #ffffff; letter-spacing: 0.5px; }
         button {
-            background-color: var(--panel-bg);
+            background-color: rgba(255, 255, 255, 0.08);
             color: var(--text-color);
             border: 1px solid var(--border-color);
-            padding: 6px 12px;
-            border-radius: 6px;
+            padding: 6px 14px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 0.9rem;
+            transition: all 0.2s ease;
         }
-        button:hover { background-color: var(--border-color); }
+        button:hover { background-color: rgba(255, 255, 255, 0.15); }
         #chat-container {
             flex: 1;
             overflow-y: auto;
@@ -52,23 +54,26 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            max-width: 800px;
+            max-width: 850px;
             width: 100%;
             margin: 0 auto;
             box-sizing: border-box;
         }
         .message {
-            padding: 12px 16px;
-            border-radius: 12px;
+            padding: 14px 18px;
+            border-radius: 14px;
             max-width: 85%;
-            line-height: 1.5;
+            line-height: 1.6;
             word-break: break-word;
             position: relative;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
         .user-message {
-            background-color: var(--user-bubble);
+            background: var(--user-bubble);
             color: #ffffff;
             align-self: flex-end;
+            font-weight: 500;
         }
         .ai-message {
             background-color: var(--ai-bubble);
@@ -76,27 +81,28 @@
             align-self: flex-start;
             border: 1px solid var(--border-color);
         }
-        .ai-message img { max-width: 100%; border-radius: 8px; margin-top: 10px; display: block; }
+        .ai-message img { max-width: 100%; border-radius: 10px; margin-top: 10px; display: block; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
         .copy-btn {
             position: absolute;
-            top: 5px;
-            right: 5px;
-            background: rgba(0,0,0,0.3);
+            top: 6px;
+            right: 6px;
+            background: rgba(0,0,0,0.4);
             border: none;
             color: #fff;
             font-size: 0.75rem;
-            padding: 2px 6px;
-            border-radius: 4px;
+            padding: 3px 8px;
+            border-radius: 6px;
             cursor: pointer;
         }
         .input-area {
             background-color: var(--panel-bg);
+            backdrop-filter: blur(12px);
             border-top: 1px solid var(--border-color);
             padding: 15px;
             display: flex;
             flex-direction: column;
             gap: 10px;
-            max-width: 800px;
+            max-width: 850px;
             width: 100%;
             margin: 0 auto;
             box-sizing: border-box;
@@ -108,15 +114,17 @@
         }
         textarea {
             flex: 1;
-            background-color: var(--bg-color);
+            background-color: rgba(0, 0, 0, 0.3);
             color: var(--text-color);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 10px;
+            border-radius: 10px;
+            padding: 12px;
             resize: none;
-            height: 40px;
+            height: 42px;
             font-family: inherit;
+            outline: none;
         }
+        textarea:focus { border-color: #00dfd8; }
         .tools-row {
             display: flex;
             gap: 10px;
@@ -127,31 +135,43 @@
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            background: var(--bg-color);
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border-color);
-            padding: 4px 8px;
-            border-radius: 6px;
+            padding: 5px 10px;
+            border-radius: 8px;
             cursor: pointer;
+            transition: background 0.2s;
         }
-        #file-name { font-size: 0.8rem; color: #8b949e; }
+        .file-label:hover { background: rgba(255, 255, 255, 0.12); }
+        #file-name { font-size: 0.8rem; color: #00dfd8; font-weight: 500; }
         .primary-btn {
-            background-color: var(--accent-color);
+            background: linear-gradient(135deg, #7928ca, #b100ff);
             color: white;
             border: none;
             font-weight: bold;
+            padding: 0 18px;
+            height: 44px;
+            border-radius: 10px;
         }
-        .primary-btn:hover { background-color: var(--accent-hover); }
+        .primary-btn:hover { opacity: 0.9; }
         .mic-btn {
-            background-color: var(--panel-bg);
+            background-color: rgba(255, 255, 255, 0.08);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 8px 12px;
+            border-radius: 10px;
+            padding: 10px 14px;
             cursor: pointer;
+            font-size: 1rem;
         }
         .mic-btn.listening {
             background-color: #da3633;
             color: white;
             border-color: #f85149;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
         }
         /* Settings Modal */
         #settings-modal {
@@ -159,39 +179,42 @@
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
             justify-content: center;
             align-items: center;
             z-index: 1000;
         }
         .modal-content {
-            background: var(--panel-bg);
-            padding: 20px;
-            border-radius: 12px;
+            background: #1a1b26;
+            padding: 25px;
+            border-radius: 14px;
             border: 1px solid var(--border-color);
             width: 90%;
             max-width: 400px;
             display: flex;
             flex-direction: column;
             gap: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         .modal-content input {
-            background: var(--bg-color);
+            background: rgba(0,0,0,0.4);
             border: 1px solid var(--border-color);
             color: var(--text-color);
-            padding: 8px;
-            border-radius: 6px;
+            padding: 10px;
+            border-radius: 8px;
+            outline: none;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>BUILDWISE AI</h1>
+        <h1>✨ BUILDWISE AI</h1>
         <button onclick="toggleSettings()">⚙️ Settings</button>
     </header>
 
     <div id="chat-container">
-        <div class="message ai-message">Hello! I am Buildwise AI. You can chat with me, upload documents, send photos/camera pictures, use voice input, or ask me to generate images!</div>
+        <div class="message ai-message">Hello! I am Buildwise AI. Upload documents/photos, use the voice mic 🎙️, or ask me to generate images!</div>
     </div>
 
     <div class="input-area">
@@ -203,7 +226,7 @@
         </div>
         <div class="input-row">
             <button id="micBtn" class="mic-btn" onclick="toggleSpeechRecognition()" title="Voice Input">🎙️</button>
-            <textarea id="userInput" placeholder="Type a message, ask to generate an image, or upload a doc..." rows="1" onkeydown="handleKeyDown(event)"></textarea>
+            <textarea id="userInput" placeholder="Ask anything, describe an image to generate..." rows="1" onkeydown="handleKeyDown(event)"></textarea>
             <button class="primary-btn" onclick="sendMessage()">Generate ⚡</button>
         </div>
     </div>
@@ -211,9 +234,9 @@
     <!-- Settings Modal -->
     <div id="settings-modal">
         <div class="modal-content">
-            <h3>Gemini API Key</h3>
+            <h3 style="margin:0 0 5px 0;">Gemini API Key</h3>
             <input type="password" id="apiKeyInput" placeholder="Paste your AIza... key here">
-            <button class="primary-btn" onclick="saveApiKey()">Save Key & Close</button>
+            <button class="primary-btn" onclick="saveApiKey()" style="height: 38px;">Save Key & Close</button>
         </div>
     </div>
 
@@ -223,7 +246,6 @@
         let attachedFile = null;
         let recognition = null;
 
-        // Initialize Speech Recognition for Mic
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             recognition = new SpeechRecognition();
@@ -232,23 +254,16 @@
             recognition.lang = 'en-US';
 
             recognition.onresult = function(event) {
-                const speechToText = event.results[0][0].transcript;
-                document.getElementById('userInput').value += ' ' + speechToText;
+                document.getElementById('userInput').value += ' ' + event.results[0][0].transcript;
                 stopListeningUI();
             };
-
-            recognition.onerror = function() {
-                stopListeningUI();
-            };
-
-            recognition.onend = function() {
-                stopListeningUI();
-            };
+            recognition.onerror = () => stopListeningUI();
+            recognition.onend = () => stopListeningUI();
         }
 
         function toggleSpeechRecognition() {
             if (!recognition) {
-                alert('Speech recognition is not supported in this browser. Try using Google Chrome.');
+                alert('Speech recognition is not supported in this browser. Use Google Chrome.');
                 return;
             }
             const btn = document.getElementById('micBtn');
@@ -277,8 +292,7 @@
         }
 
         function saveApiKey() {
-            const key = document.getElementById('apiKeyInput').value.trim();
-            localStorage.setItem('gemini_api_key', key);
+            localStorage.setItem('gemini_api_key', document.getElementById('apiKeyInput').value.trim());
             toggleSettings();
             alert('API Key Saved!');
         }
@@ -289,19 +303,16 @@
                 const reader = new FileReader();
                 
                 reader.onload = function(e) {
-                    const base64String = e.target.result.split(',')[1];
+                    const base64Data = e.target.result.split(',')[1];
                     attachedFile = {
-                        data: base64String,
-                        mimeType: file.type || 'application/pdf',
+                        inlineData: {
+                            mimeType: file.type || 'application/pdf',
+                            data: base64Data
+                        },
                         name: file.name
                     };
                     document.getElementById('file-name').innerText = `📎 ${file.name}`;
                 };
-
-                reader.onerror = function() {
-                    alert('Error reading file. Please try another file.');
-                };
-
                 reader.readAsDataURL(file);
             }
         }
@@ -325,43 +336,37 @@
             const text = inputField.value.trim();
             if (!text && !attachedFile) return;
 
-            // Check if user is asking for image generation
-            const isImageGen = text.toLowerCase().startsWith('generate image') || 
-                               text.toLowerCase().startsWith('draw') || 
-                               text.toLowerCase().startsWith('create an image');
+            const lowerText = text.toLowerCase();
+            const isImageGen = lowerText.startsWith('generate image') || 
+                               lowerText.startsWith('draw') || 
+                               lowerText.startsWith('create an image') || 
+                               lowerText.includes('generate me an image');
 
-            let displayUserText = text || `[Attached: ${attachedFile.name}]`;
+            let displayUserText = text || `[Attached file: ${attachedFile.name}]`;
             appendMessage(displayUserText, 'user-message');
             inputField.value = '';
 
-            // Handle Image Generation Request Separately
+            // Handle Direct Image Generation Trigger
             if (isImageGen && !attachedFile) {
-                const promptQuery = text.replace(/^(generate image of|draw|create an image of)\s*/i, '');
-                const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptQuery)}?width=1024&height=1024&nologo=true`;
+                const promptQuery = text.replace(/^(can you generate me an image on topic|generate an image of|generate image|draw|create an image of)\s*/i, '').trim();
+                const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptQuery || text)}?width=1024&height=1024&nologo=true`;
                 
                 chatHistory.push({ role: 'user', parts: [{ text: text }] });
-                const imageMarkdown = `Here is your generated image:\n\n![${promptQuery}](${imageUrl})`;
+                const imageMarkdown = `Here is your generated image:\n\n![${promptQuery || 'AI Image'}](${imageUrl})`;
                 chatHistory.push({ role: 'model', parts: [{ text: imageMarkdown }] });
                 
                 appendMessage(imageMarkdown, 'ai-message');
                 return;
             }
 
-            // Build payload for Gemini API
             let currentParts = [];
             if (text) currentParts.push({ text: text });
             if (attachedFile) {
-                currentParts.push({
-                    inlineData: {
-                        mimeType: attachedFile.mimeType,
-                        data: attachedFile.data
-                    }
-                });
+                currentParts.push(attachedFile.inlineData);
             }
 
             chatHistory.push({ role: 'user', parts: currentParts });
             
-            // Clear attachment UI
             const currentAttachment = attachedFile;
             attachedFile = null;
             document.getElementById('file-name').innerText = '';
@@ -370,7 +375,6 @@
 
             try {
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`;
-                
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -378,20 +382,16 @@
                 });
 
                 const data = await response.json();
-                
-                if (data.error) {
-                    throw new Error(data.error.message);
-                }
+                if (data.error) throw new Error(data.error.message);
 
                 const reply = data.candidates[0].content.parts[0].text;
-                
                 chatHistory.push({ role: 'model', parts: [{ text: reply }] });
                 updateMessage(loadingId, reply);
 
             } catch (err) {
                 updateMessage(loadingId, `❌ Error: ${err.message}`);
-                chatHistory.pop(); 
-                attachedFile = currentAttachment; // restore on failure
+                chatHistory.pop();
+                attachedFile = currentAttachment;
             }
         }
 
@@ -399,22 +399,12 @@
             const container = document.getElementById('chat-container');
             const msgDiv = document.createElement('div');
             msgDiv.className = `message ${className}`;
-            
             const msgId = 'msg-' + Math.random().toString(36).substring(2, 9);
             msgDiv.id = msgId;
 
             if (className === 'ai-message') {
                 msgDiv.innerHTML = marked.parse(text);
-                const copyBtn = document.createElement('button');
-                copyBtn.className = 'copy-btn';
-                copyBtn.innerText = 'Copy';
-                copyBtn.onclick = () => {
-                    const rawText = text.replace(/!\[.*?\]\(.*?\)/g, ''); // strip markdown image for clean copy
-                    navigator.clipboard.writeText(rawText);
-                    copyBtn.innerText = 'Copied!';
-                    setTimeout(() => copyBtn.innerText = 'Copy', 2000);
-                };
-                msgDiv.appendChild(copyBtn);
+                addCopyButton(msgDiv, text);
             } else {
                 msgDiv.innerText = text;
             }
@@ -428,20 +418,22 @@
             const msgDiv = document.getElementById(id);
             if (msgDiv) {
                 msgDiv.innerHTML = marked.parse(text);
-                const copyBtn = document.createElement('button');
-                copyBtn.className = 'copy-btn';
-                copyBtn.innerText = 'Copy';
-                copyBtn.onclick = () => {
-                    const rawText = text.replace(/!\[.*?\]\(.*?\)/g, '');
-                    navigator.clipboard.writeText(rawText);
-                    copyBtn.innerText = 'Copied!';
-                    setTimeout(() => copyBtn.innerText = 'Copy', 2000);
-                };
-                msgDiv.appendChild(copyBtn);
-                
+                addCopyButton(msgDiv, text);
                 const container = document.getElementById('chat-container');
                 container.scrollTop = container.scrollHeight;
             }
+        }
+
+        function addCopyButton(msgDiv, text) {
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.innerText = 'Copy';
+            copyBtn.onclick = () => {
+                navigator.clipboard.writeText(text.replace(/!\[.*?\]\(.*?\)/g, ''));
+                copyBtn.innerText = 'Copied!';
+                setTimeout(() => copyBtn.innerText = 'Copy', 2000);
+            };
+            msgDiv.appendChild(copyBtn);
         }
     </script>
 </body>
