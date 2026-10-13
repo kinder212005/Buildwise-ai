@@ -173,7 +173,6 @@
             50% { transform: scale(1.08); }
             100% { transform: scale(1); }
         }
-        /* Settings Modal */
         #settings-modal {
             display: none;
             position: fixed;
@@ -362,7 +361,12 @@
             let currentParts = [];
             if (text) currentParts.push({ text: text });
             if (attachedFile) {
-                currentParts.push(attachedFile.inlineData);
+                currentParts.push({
+                    inlineData: {
+                        mimeType: attachedFile.inlineData.mimeType,
+                        data: attachedFile.inlineData.data
+                    }
+                });
             }
 
             chatHistory.push({ role: 'user', parts: currentParts });
@@ -390,7 +394,7 @@
 
             } catch (err) {
                 updateMessage(loadingId, `❌ Error: ${err.message}`);
-                chatHistory.pop();
+                chatHistory.pop(); // remove failed user request from memory
                 attachedFile = currentAttachment;
             }
         }
